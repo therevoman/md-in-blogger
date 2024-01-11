@@ -1,4 +1,4 @@
-This repo was forked to update the javascript libraries and embed the custom JS instead of linking to the writers webserver.
+This repo was forked to update the javascript libraries and embed the custom JS instead of linking to surge.sh.
 
 Full attribution goes to cs905s!!
 

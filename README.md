@@ -1,5 +1,10 @@
+This repo was forked to update the javascript libraries and embed the custom JS instead of linking to the writers webserver.
+
+Full attribution goes to cs905s!!
+
+
 # Embedding Markdown in a Blogger HTML page.
-This originally was on my blog at https://js-react.blogspot.com/2017/01/using-markdown-in-blogger.html.
+This originally was on the blog at https://js-react.blogspot.com/2017/01/using-markdown-in-blogger.html.
 
 [Markdown](http://daringfireball.net/projects/markdown/) has become very popular due to its simplicity and its wide adoption in Github and other developer websites. So when I was looking at Blogger to start a blog, I wanted the same easy syntax. I had expected that Blogger would support Markdown natively. Alas it does not. 
 
@@ -18,10 +23,57 @@ jQuery had the nice bonus of cleaning up the previous code by abstracting away t
 
    2. At the bottom of the template, add the following tags just before the </html> tag.
 ```html
-<script src='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js' type='text/javascript'></script>
-<script src='//cdnjs.cloudflare.com/ajax/libs/showdown/1.6.2/showdown.min.js' type='text/javascript'></script>
-<script src='//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js' type='text/javascript'></script>
-<script src='//mxp22.surge.sh/markdown-highlight-in-blogger.js' type='text/javascript'></script>
+	<link href='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css' rel='stylesheet'/>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js' type='text/javascript'/>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js' type='text/javascript'/>
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js' type='text/javascript'/>
+	<script type='text/javascript'>
+      //
+      // markdown-highlight-in-blogger.js -- javascript for using Markdown in Blogger
+      // Based on Francis Tang&#39;s http://blog.chukhang.com/2011/09/markdown-in-blogger.html
+      // Copyright (c) 2017 Divya van Mahajan
+      //
+      // Redistributable under a BSD-style open source license.
+      // Documentation: https://github.com/cs905s/md-in-blogger
+      //
+
+      // namespace
+      var MarkdownHighlightInBlogger = {};
+      // From http://erlend.oftedal.no/blog/?blogid=14
+      MarkdownHighlightInBlogger.unescapeHTML = function (html) {
+        var htmlNode = document.createElement(&quot;DIV&quot;);
+        htmlNode.innerHTML = html;
+        if(htmlNode.innerText !== undefined)
+          return htmlNode.innerText; // IE
+        return htmlNode.textContent; // FF
+      };
+
+      MarkdownHighlightInBlogger.convertMD = function () {
+        try {
+
+          console.info(&#39;Converting markdown using jQuery&#39;);
+
+          // showdown renderer
+          var converter = new showdown.Converter({});
+          converter.setFlavor(&#39;github&#39;);
+          $(&#39;pre.markdown&#39;).each(function (i, block) {
+            //var rawtext = MarkdownHighlightInBlogger.unescapeHTML(block.innerText);
+            var rawtext = block.innerText;
+            var md_html = converter.makeHtml(rawtext);
+            var md = $(md_html); //.css(&#39;border&#39;,&#39;3px solid blue&#39;);
+            md.insertBefore(block);
+            block.hidden = true;
+          });
+          $(&#39;pre code&#39;).each(function (i, block) {
+            hljs.highlightElement(block);
+          });
+        } catch (exc) {
+          console.error(exc);
+        }
+      };
+
+      $(document).ready(MarkdownHighlightInBlogger.convertMD);
+    </script>
 ```
 
    3. Save your template. The first three steps need to be done only once. If you have a mobile template, remember to adjust that template as well.
